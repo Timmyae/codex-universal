@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCFHS EMS Admin</title>
+</head>
+<body>
+  <h1>Question Management</h1>
+  <form id="questionForm">
+    <label>Category:
+      <select id="category">
+        <option>Airway Management</option>
+        <option>Cardiovascular Emergencies</option>
+        <option>Trauma</option>
+        <option>Obstetrics & Gynecology</option>
+        <option>Pediatrics</option>
+        <option>Pharmacology</option>
+        <option>EMS Operations</option>
+        <option>Medical Terminology</option>
+        <option>Patient Assessment</option>
+        <option>Medical Emergencies</option>
+        <option>Environmental Emergencies</option>
+        <option>Leadership & Professionalism</option>
+        <option>Research & Evidence Based Practice</option>
+      </select>
+    </label><br>
+    <label>Difficulty:
+      <input type="number" step="0.1" id="difficulty" value="0.5" />
+    </label><br>
+    <label>Discrimination:
+      <input type="number" step="0.1" id="discrimination" value="1.0" />
+    </label><br>
+    <textarea id="question" rows="4" cols="50" placeholder="Question text"></textarea><br>
+    <input type="text" id="opt0" placeholder="Option A"><br>
+    <input type="text" id="opt1" placeholder="Option B"><br>
+    <input type="text" id="opt2" placeholder="Option C"><br>
+    <input type="text" id="opt3" placeholder="Option D"><br>
+    <label>Correct option index:
+      <input type="number" id="answer" min="0" max="3" value="0" />
+    </label><br>
+    <button type="submit">Save Question</button>
+  </form>
+
+  <script type="module">
+    // Firebase initialization (replace with your config in manifest)
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_BUCKET",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    async function secureUpload(question) {
+      const resp = await fetch('https://api.proxably.com/v1/openai', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ prompt: question })
+      });
+      return resp.json();
+    }
+
+    document.getElementById('questionForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const q = document.getElementById('question').value;
+      const options = [0,1,2,3].map(i => document.getElementById('opt'+i).value);
+      const record = {
+        category: document.getElementById('category').value,
+        difficulty: parseFloat(document.getElementById('difficulty').value),
+        discrimination: parseFloat(document.getElementById('discrimination').value),
+        question: q,
+        options,
+        answer: parseInt(document.getElementById('answer').value)
+      };
+      await secureUpload(q);
+      await addDoc(collection(db, 'questions'), record);
+      alert('Question saved');
+      e.target.reset();
+    });
+  </script>
+</body>
+</html>

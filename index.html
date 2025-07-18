@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="manifest.webmanifest">
+  <title>EMS Adaptive Exam</title>
+</head>
+<body>
+  <h1>Paramedic Exam Practice</h1>
+  <div id="questionContainer"></div>
+  <button id="nextBtn">Start</button>
+  <p id="score"></p>
+
+  <script type="module" src="adaptive-algorithm.js"></script>
+  <script type="module">
+    import { selectNextQuestion, updateTheta } from './adaptive-algorithm.js';
+
+    let theta = 0;
+    let asked = new Set();
+    let score = 0;
+    let bank = [];
+
+    async function loadBank() {
+      const resp = await fetch('question_bank.json');
+      bank = await resp.json();
+    }
+
+    function showQuestion(item) {
+      const div = document.getElementById('questionContainer');
+      div.innerHTML = `<p>${item.question}</p>` +
+        item.options.map((o,i)=>`<button data-i="${i}">${o}</button>`).join('');
+    }
+
+    async function next() {
+      if (!bank.length) await loadBank();
+      const item = selectNextQuestion(theta, bank, asked);
+      if (!item) { document.getElementById('score').innerText = `Score: ${score}`; return; }
+      asked.add(item.id);
+      showQuestion(item);
+      document.querySelectorAll('#questionContainer button').forEach(btn => {
+        btn.onclick = () => {
+          const ans = parseInt(btn.dataset.i);
+          if (ans === item.answer) score++;
+          theta = updateTheta(theta, item.discrimination, item.difficulty, ans === item.answer ? 1 : 0);
+          document.getElementById('score').innerText = `Ability: ${theta.toFixed(2)} | Score: ${score}`;
+          next();
+        };
+      });
+    }
+
+    document.getElementById('nextBtn').onclick = next;
+  </script>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/service-worker.js");}</script>
+</body>
+</html>

@@ -1,0 +1,236 @@
+[
+  {
+    "id": 1,
+    "category": "Airway Management",
+    "question": "Which device provides the highest concentration of oxygen in the prehospital setting?",
+    "options": ["Simple face mask", "Nonrebreather mask", "Nasal cannula", "Venturi mask"],
+    "answer": 1,
+    "difficulty": 0.5,
+    "discrimination": 1.2
+  },
+  {
+    "id": 2,
+    "category": "Airway Management",
+    "question": "What is the first step in confirming endotracheal tube placement?",
+    "options": ["Chest rise and fall", "Capnography", "Breath sounds", "Pulse oximetry"],
+    "answer": 1,
+    "difficulty": 0.7,
+    "discrimination": 1.4
+  },
+  {
+    "id": 3,
+    "category": "Cardiovascular Emergencies",
+    "question": "Which rhythm requires defibrillation?",
+    "options": ["Asystole", "Pulseless ventricular tachycardia", "Sinus tachycardia", "Atrial fibrillation"],
+    "answer": 1,
+    "difficulty": 0.6,
+    "discrimination": 1.3
+  },
+  {
+    "id": 4,
+    "category": "Cardiovascular Emergencies",
+    "question": "When treating cardiogenic shock, which medication is commonly administered to improve contractility?",
+    "options": ["Adenosine", "Nitroglycerin", "Dopamine", "Lidocaine"],
+    "answer": 2,
+    "difficulty": 0.8,
+    "discrimination": 1.5
+  },
+  {
+    "id": 5,
+    "category": "Trauma",
+    "question": "What is the correct sequence for bleeding control in a limb?",
+    "options": ["Direct pressure, tourniquet, pressure dressing", "Pressure dressing, direct pressure, tourniquet", "Tourniquet, direct pressure, pressure dressing", "Direct pressure, pressure dressing, tourniquet"],
+    "answer": 0,
+    "difficulty": 0.4,
+    "discrimination": 1.1
+  },
+  {
+    "id": 6,
+    "category": "Trauma",
+    "question": "What Glasgow Coma Scale (GCS) score indicates a severe head injury?",
+    "options": ["13-15", "9-12", "3-8", "1-2"],
+    "answer": 2,
+    "difficulty": 0.5,
+    "discrimination": 1.2
+  },
+  {
+    "id": 7,
+    "category": "Obstetrics & Gynecology",
+    "question": "During delivery, what should be done if shoulder dystocia occurs?",
+    "options": ["Apply gentle fundal pressure", "Use McRoberts maneuver", "Administer oxytocin", "Perform a cesarean section"],
+    "answer": 1,
+    "difficulty": 0.6,
+    "discrimination": 1.3
+  },
+  {
+    "id": 8,
+    "category": "Obstetrics & Gynecology",
+    "question": "What is the recommended position for transport of a 36-week pregnant trauma patient?",
+    "options": ["Supine", "Semi-Fowler's", "Left lateral recumbent", "Trendelenburg"],
+    "answer": 2,
+    "difficulty": 0.4,
+    "discrimination": 1.1
+  },
+  {
+    "id": 9,
+    "category": "Pediatrics",
+    "question": "What is the preferred airway device for a child with a suspected cervical spine injury?",
+    "options": ["Head-tilt chin-lift", "Jaw-thrust maneuver", "Nasopharyngeal airway", "Combitube"],
+    "answer": 1,
+    "difficulty": 0.6,
+    "discrimination": 1.3
+  },
+  {
+    "id": 10,
+    "category": "Pediatrics",
+    "question": "The Pediatric Assessment Triangle includes appearance, work of breathing, and which other component?",
+    "options": ["Pulse rate", "Blood pressure", "Skin signs", "Circulation"],
+    "answer": 3,
+    "difficulty": 0.5,
+    "discrimination": 1.2
+  },
+  {
+    "id": 11,
+    "category": "Pharmacology",
+    "question": "Which medication is indicated for symptomatic bradycardia?",
+    "options": ["Atropine", "Amiodarone", "Epinephrine", "Verapamil"],
+    "answer": 0,
+    "difficulty": 0.5,
+    "discrimination": 1.2
+  },
+  {
+    "id": 12,
+    "category": "Pharmacology",
+    "question": "What is the adult intramuscular dose of epinephrine for anaphylaxis (1:1,000)?",
+    "options": ["0.1 mg", "0.3 mg", "1 mg", "2 mg"],
+    "answer": 1,
+    "difficulty": 0.6,
+    "discrimination": 1.4
+  },
+  {
+    "id": 13,
+    "category": "EMS Operations",
+    "question": "Which agency sets the standard for ambulance design and equipment in Saudi Arabia?",
+    "options": ["SCFHS", "Red Crescent Authority", "Ministry of Health", "Civil Defense"],
+    "answer": 1,
+    "difficulty": 0.7,
+    "discrimination": 1.3
+  },
+  {
+    "id": 14,
+    "category": "EMS Operations",
+    "question": "What does the START triage acronym stand for?",
+    "options": ["Simple Triage and Rapid Treatment", "Systematic Triage and Rapid Transport", "Secondary Triage and Rapid Transport", "Standard Triage and Response Training"],
+    "answer": 0,
+    "difficulty": 0.5,
+    "discrimination": 1.2
+  },
+  {
+    "id": 15,
+    "category": "Medical Terminology",
+    "question": "The prefix 'brady-' refers to which of the following?",
+    "options": ["Fast", "Slow", "Under", "Above"],
+    "answer": 1,
+    "difficulty": 0.3,
+    "discrimination": 1.0
+  },
+  {
+    "id": 16,
+    "category": "Medical Terminology",
+    "question": "What does the suffix '-itis' indicate?",
+    "options": ["Pain", "Inflammation", "Surgical removal", "Disease"],
+    "answer": 1,
+    "difficulty": 0.3,
+    "discrimination": 1.0
+  },
+  {
+    "id": 17,
+    "category": "Patient Assessment",
+    "question": "When assessing a patient's mental status, what does 'AVPU' stand for?",
+    "options": ["Alert, Vocal, Pain, Unresponsive", "Assess, Visualize, Palpate, Utilize", "Airway, Ventilate, Pulse, Update", "Alert, Verbal, Painful, Unresponsive"],
+    "answer": 3,
+    "difficulty": 0.4,
+    "discrimination": 1.1
+  },
+  {
+    "id": 18,
+    "category": "Patient Assessment",
+    "question": "Which pulse site is most appropriate to assess during CPR in an adult?",
+    "options": ["Radial", "Brachial", "Carotid", "Femoral"],
+    "answer": 2,
+    "difficulty": 0.4,
+    "discrimination": 1.1
+  },
+  {
+    "id": 19,
+    "category": "Medical Emergencies",
+    "question": "A sudden onset of slurred speech and facial droop is most likely indicative of which condition?",
+    "options": ["Hypoglycemia", "Stroke", "Seizure", "Migraine"],
+    "answer": 1,
+    "difficulty": 0.5,
+    "discrimination": 1.2
+  },
+  {
+    "id": 20,
+    "category": "Medical Emergencies",
+    "question": "Which blood glucose level defines hypoglycemia in adults?",
+    "options": ["<3 mmol/L", "<4 mmol/L", "<5 mmol/L", "<6 mmol/L"],
+    "answer": 1,
+    "difficulty": 0.6,
+    "discrimination": 1.2
+  },
+  {
+    "id": 21,
+    "category": "Environmental Emergencies",
+    "question": "In heat stroke, what is the most critical initial treatment?",
+    "options": ["Rapid cooling", "IV fluids", "Oxygen administration", "Transport"],
+    "answer": 0,
+    "difficulty": 0.5,
+    "discrimination": 1.2
+  },
+  {
+    "id": 22,
+    "category": "Environmental Emergencies",
+    "question": "Frostbite commonly affects which part of the body first?",
+    "options": ["Torso", "Face", "Fingers", "Thighs"],
+    "answer": 2,
+    "difficulty": 0.4,
+    "discrimination": 1.1
+  },
+  {
+    "id": 23,
+    "category": "Leadership & Professionalism",
+    "question": "Which leadership style encourages team input and collaboration?",
+    "options": ["Autocratic", "Democratic", "Laissez-faire", "Transactional"],
+    "answer": 1,
+    "difficulty": 0.6,
+    "discrimination": 1.2
+  },
+  {
+    "id": 24,
+    "category": "Leadership & Professionalism",
+    "question": "Maintaining patient confidentiality is primarily governed by which ethical principle?",
+    "options": ["Justice", "Beneficence", "Autonomy", "Fidelity"],
+    "answer": 3,
+    "difficulty": 0.5,
+    "discrimination": 1.1
+  },
+  {
+    "id": 25,
+    "category": "Research & Evidence Based Practice",
+    "question": "What type of study compares outcomes of two groups prospectively?",
+    "options": ["Case-control", "Cross-sectional", "Cohort", "Meta-analysis"],
+    "answer": 2,
+    "difficulty": 0.7,
+    "discrimination": 1.3
+  },
+  {
+    "id": 26,
+    "category": "Research & Evidence Based Practice",
+    "question": "Which statistical measure indicates the reliability of study results?",
+    "options": ["P-value", "Mean", "Mode", "Median"],
+    "answer": 0,
+    "difficulty": 0.7,
+    "discrimination": 1.3
+  }
+]

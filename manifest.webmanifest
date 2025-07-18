@@ -1,0 +1,9 @@
+{
+  "name": "SCFHS EMS Adaptive Exam",
+  "short_name": "EMS Exam",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "description": "Adaptive testing PWA for SCFHS paramedic exam prep",
+  "icons": []
+}

@@ -31,69 +31,65 @@ jobs:
           push: true
           tags: ghcr.io/timmyae/codex-universal:latest
 
-set -euo pipefail
+      - name: Configure language runtimes (optional)
+        run: |
+          set -euo pipefail
 
-CODEX_ENV_PYTHON_VERSION=${CODEX_ENV_PYTHON_VERSION:-}
-CODEX_ENV_NODE_VERSION=${CODEX_ENV_NODE_VERSION:-}
-CODEX_ENV_RUST_VERSION=${CODEX_ENV_RUST_VERSION:-}
-CODEX_ENV_GO_VERSION=${CODEX_ENV_GO_VERSION:-}
-CODEX_ENV_SWIFT_VERSION=${CODEX_ENV_SWIFT_VERSION:-}
+          CODEX_ENV_PYTHON_VERSION=${CODEX_ENV_PYTHON_VERSION:-}
+          CODEX_ENV_NODE_VERSION=${CODEX_ENV_NODE_VERSION:-}
+          CODEX_ENV_RUST_VERSION=${CODEX_ENV_RUST_VERSION:-}
+          CODEX_ENV_GO_VERSION=${CODEX_ENV_GO_VERSION:-}
+          CODEX_ENV_SWIFT_VERSION=${CODEX_ENV_SWIFT_VERSION:-}
 
-echo "Configuring language runtimes..."
+          echo "Configuring language runtimes..."
 
-# For Python and Node, always run the install commands so we can install
-# global libraries for linting and formatting. This just switches the version.
+          # Python config
+          if [ -n "${CODEX_ENV_PYTHON_VERSION}" ]; then
+              echo "# Python: ${CODEX_ENV_PYTHON_VERSION}"
+              pyenv global "${CODEX_ENV_PYTHON_VERSION}"
+          fi
 
-# For others (e.g. rust), to save some time on bootup we only install other language toolchains
-# if the versions differ.
+          # Node.js config
+          if [ -n "${CODEX_ENV_NODE_VERSION}" ]; then
+              echo "# Node.js: ${CODEX_ENV_NODE_VERSION}"
+              nvm alias default "${CODEX_ENV_NODE_VERSION}"
+              nvm use "${CODEX_ENV_NODE_VERSION}"
+              corepack enable
+              corepack install -g yarn pnpm npm
+          fi
 
-if [ -n "${CODEX_ENV_PYTHON_VERSION}" ]; then
-    echo "# Python: ${CODEX_ENV_PYTHON_VERSION}"
-    pyenv global "${CODEX_ENV_PYTHON_VERSION}"
-fi
+          # Rust config
+          if [ -n "${CODEX_ENV_RUST_VERSION}" ]; then
+              current=$(rustc --version | awk '{print $2}')
+              echo "# Rust: ${CODEX_ENV_RUST_VERSION} (default: ${current})"
+              if [ "${current}" != "${CODEX_ENV_RUST_VERSION}" ]; then
+                  rustup toolchain install --no-self-update "${CODEX_ENV_RUST_VERSION}"
+                  rustup default "${CODEX_ENV_RUST_VERSION}"
+              fi
+          fi
 
-if [ -n "${CODEX_ENV_NODE_VERSION}" ]; then
-    echo "# Node.js: ${CODEX_ENV_NODE_VERSION}"
-    nvm alias default "${CODEX_ENV_NODE_VERSION}"
-    nvm use "${CODEX_ENV_NODE_VERSION}"
-    corepack enable
-    corepack install -g yarn pnpm npm
-fi
+          # Go config
+          if [ -n "${CODEX_ENV_GO_VERSION}" ]; then
+              current=$(go version | awk '{print $3}' | sed 's/go//')
+              echo "# Go: go${CODEX_ENV_GO_VERSION} (default: go${current})"
+              if [ "${current}" != "${CODEX_ENV_GO_VERSION}" ]; then
+                  go install "golang.org/dl/go${CODEX_ENV_GO_VERSION}@latest"
+                  "go${CODEX_ENV_GO_VERSION}" download
+                  NEW_GO_ROOT=$("go${CODEX_ENV_GO_VERSION}" env GOROOT)
+                  export PATH="${NEW_GO_ROOT}/bin:$PATH"
+                  echo "export PATH=${NEW_GO_ROOT}/bin:\$PATH" >> /etc/profile
+                  echo "# Switched to Go version: $(go version)"
+                  if command -v golangci-lint >/dev/null 2>&1; then
+                      golangci-lint --version
+                  fi
+              fi
+          fi
 
-if [ -n "${CODEX_ENV_RUST_VERSION}" ]; then
-    current=$(rustc --version | awk '{print $2}')   # ==> 1.86.0
-    echo "# Rust: ${CODEX_ENV_RUST_VERSION} (default: ${current})"
-    if [ "${current}" != "${CODEX_ENV_RUST_VERSION}" ]; then
-        rustup toolchain install --no-self-update "${CODEX_ENV_RUST_VERSION}"
-        rustup default "${CODEX_ENV_RUST_VERSION}"
-        # Pre-install common linters/formatters
-        # clippy is already installed
-    fi
-fi
-
-if [ -n "${CODEX_ENV_GO_VERSION}" ]; then
-    current=$(go version | awk '{print $3}' | sed 's/go//')   # ==> 1.23.8 (strip 'go' prefix)
-    echo "# Go: go${CODEX_ENV_GO_VERSION} (default: go${current})"
-    if [ "${current}" != "${CODEX_ENV_GO_VERSION}" ]; then
-        go install "golang.org/dl/go${CODEX_ENV_GO_VERSION}@latest"
-        "go${CODEX_ENV_GO_VERSION}" download
-        # Place new go first in PATH for current session and future sessions
-        NEW_GO_ROOT=$("go${CODEX_ENV_GO_VERSION}" env GOROOT)
-        export PATH="${NEW_GO_ROOT}/bin:$PATH"
-        echo "export PATH=${NEW_GO_ROOT}/bin:\$PATH" >> /etc/profile
-        # Verify the switch worked
-        echo "# Switched to Go version: $(go version)"
-        # Pre-install common linters/formatters
-        if command -v golangci-lint >/dev/null 2>&1; then
-            golangci-lint --version # Already installed in base image, save us some bootup time
-        fi
-    fi
-fi
-
-if [ -n "${CODEX_ENV_SWIFT_VERSION}" ]; then
-    current=$(swift --version | awk -F'version ' '{print $2}' | awk '{print $1}')   # ==> 6.1
-    echo "# Swift: ${CODEX_ENV_SWIFT_VERSION} (default: ${current})"
-    if [ "${current}" != "${CODEX_ENV_SWIFT_VERSION}" ]; then
-        swiftly install --use "${CODEX_ENV_SWIFT_VERSION}"
-    fi
-fi
+          # Swift config
+          if [ -n "${CODEX_ENV_SWIFT_VERSION}" ]; then
+              current=$(swift --version | awk -F'version ' '{print $2}' | awk '{print $1}')
+              echo "# Swift: ${CODEX_ENV_SWIFT_VERSION} (default: ${current})"
+              if [ "${current}" != "${CODEX_ENV_SWIFT_VERSION}" ]; then
+                  swiftly install --use "${CODEX_ENV_SWIFT_VERSION}"
+              fi
+          fi

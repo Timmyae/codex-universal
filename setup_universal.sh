@@ -48,8 +48,10 @@ if [ -n "${CODEX_ENV_GO_VERSION}" ]; then
         "go${CODEX_ENV_GO_VERSION}" download
         # Place new go first in PATH
         echo "export PATH=$("go${CODEX_ENV_GO_VERSION}" env GOROOT)/bin:\$PATH" >> /etc/profile
-        # Pre-install common linters/formatters
-        golangci-lint --version # Already installed in base image, save us some bootup time
+        # Pre-install common linters/formatters (only if available)
+        if command -v golangci-lint >/dev/null 2>&1; then
+            golangci-lint --version || true
+        fi
     fi
 fi
 

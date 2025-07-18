@@ -61,7 +61,7 @@ RUN apt-get update \
         rsync \
         software-properties-common \
         sqlite3 \
-        swig3.0 \
+        swig \
         tk-dev \
         tzdata \
         unixodbc-dev \

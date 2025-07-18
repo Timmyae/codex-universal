@@ -134,10 +134,13 @@ ENV PATH="$BUN_INSTALL/bin:$PATH"
 RUN mkdir -p "$BUN_INSTALL/bin" \
     && curl -L --fail "https://github.com/oven-sh/bun/releases/download/bun-v${BUN_VERSION}/bun-linux-x64-baseline.zip" \
         -o /tmp/bun.zip \
+    && curl -L --fail "https://github.com/oven-sh/bun/releases/download/bun-v${BUN_VERSION}/SHASUMS256.txt" \
+        -o /tmp/bun-shasums.txt \
+    && grep "bun-linux-x64-baseline.zip" /tmp/bun-shasums.txt | sha256sum --check - \
     && unzip -q /tmp/bun.zip -d "$BUN_INSTALL/bin" \
     && mv "$BUN_INSTALL/bin/bun-linux-x64-baseline/bun" "$BUN_INSTALL/bin/bun" \
     && chmod +x "$BUN_INSTALL/bin/bun" \
-    && rm -rf "$BUN_INSTALL/bin/bun-linux-x64-baseline" /tmp/bun.zip \
+    && rm -rf "$BUN_INSTALL/bin/bun-linux-x64-baseline" /tmp/bun.zip /tmp/bun-shasums.txt \
     && echo 'export BUN_INSTALL=/root/.bun' >> /etc/profile \
     && echo 'export PATH="$BUN_INSTALL/bin:$PATH"' >> /etc/profile
 

@@ -47,7 +47,12 @@ if [ -n "${CODEX_ENV_GO_VERSION}" ]; then
         go install "golang.org/dl/go${CODEX_ENV_GO_VERSION}@latest"
         "go${CODEX_ENV_GO_VERSION}" download
         # Place new go first in PATH
-        echo "export PATH=$("go${CODEX_ENV_GO_VERSION}" env GOROOT)/bin:\$PATH" >> /etc/profile
+        GO_ROOT=$("go${CODEX_ENV_GO_VERSION}" env GOROOT)
+        # Use atomic file operation to avoid race conditions
+        {
+            flock -x 200
+            echo "export PATH=${GO_ROOT}/bin:\$PATH" >> /etc/profile
+        } 200>/var/lock/go_setup.lock
         # Pre-install common linters/formatters
         golangci-lint --version # Already installed in base image, save us some bootup time
     fi

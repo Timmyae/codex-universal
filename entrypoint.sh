@@ -7,4 +7,4 @@ echo "=================================="
 /opt/codex/setup_universal.sh
 
 echo "Environment ready. Dropping you into a bash shell."
-exec bash --login "$@"
+exec bash --login -- "$@"

@@ -41,15 +41,21 @@ if [ -n "${CODEX_ENV_RUST_VERSION}" ]; then
 fi
 
 if [ -n "${CODEX_ENV_GO_VERSION}" ]; then
-    current=$(go version | awk '{print $3}')   # ==> go1.23.8
-    echo "# Go: go${CODEX_ENV_GO_VERSION} (default: ${current})"
-    if [ "${current}" != "go${CODEX_ENV_GO_VERSION}" ]; then
+    current=$(go version | awk '{print $3}' | sed 's/go//')   # ==> 1.23.8 (strip 'go' prefix)
+    echo "# Go: go${CODEX_ENV_GO_VERSION} (default: go${current})"
+    if [ "${current}" != "${CODEX_ENV_GO_VERSION}" ]; then
         go install "golang.org/dl/go${CODEX_ENV_GO_VERSION}@latest"
         "go${CODEX_ENV_GO_VERSION}" download
-        # Place new go first in PATH
-        echo "export PATH=$("go${CODEX_ENV_GO_VERSION}" env GOROOT)/bin:\$PATH" >> /etc/profile
+        # Place new go first in PATH for current session and future sessions
+        NEW_GO_ROOT=$("go${CODEX_ENV_GO_VERSION}" env GOROOT)
+        export PATH="${NEW_GO_ROOT}/bin:$PATH"
+        echo "export PATH=${NEW_GO_ROOT}/bin:\$PATH" >> /etc/profile
+        # Verify the switch worked
+        echo "# Switched to Go version: $(go version)"
         # Pre-install common linters/formatters
-        golangci-lint --version # Already installed in base image, save us some bootup time
+        if command -v golangci-lint >/dev/null 2>&1; then
+            golangci-lint --version # Already installed in base image, save us some bootup time
+        fi
     fi
 fi
 

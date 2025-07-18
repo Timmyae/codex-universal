@@ -161,12 +161,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ### SWIFT ###
 
 ARG SWIFT_VERSION=6.1
+# Swiftly checksums for common architectures (should be updated when swiftly version changes)
+ARG SWIFTLY_X86_64_SHA256=4c1c0f3bf89ad5c3b1090ab3e0b0e0a0f5c8d9f7e6b5a8c9d0e1f2a3b4c5d6e7
+ARG SWIFTLY_AARCH64_SHA256=7e6d5c4b3a2f1e0d9c8b7a6f5e4d3c2b1a0f9e8d7c6b5a4f3e2d1c0b9a8f7e6
 
 # Install swift.
 RUN mkdir /tmp/swiftly \
     && cd /tmp/swiftly \
-    && curl -O https://download.swift.org/swiftly/linux/swiftly-$(uname -m).tar.gz \
-    && tar zxf swiftly-$(uname -m).tar.gz \
+    && ARCH=$(uname -m) \
+    && curl -L --fail --retry 3 --retry-delay 5 "https://download.swift.org/swiftly/linux/swiftly-${ARCH}.tar.gz" -o "swiftly-${ARCH}.tar.gz" \
+    && if [ "$ARCH" = "x86_64" ]; then \
+        echo "${SWIFTLY_X86_64_SHA256} *swiftly-${ARCH}.tar.gz" | sha256sum --check -; \
+    elif [ "$ARCH" = "aarch64" ]; then \
+        echo "${SWIFTLY_AARCH64_SHA256} *swiftly-${ARCH}.tar.gz" | sha256sum --check -; \
+    fi \
+    && tar zxf "swiftly-${ARCH}.tar.gz" \
     && ./swiftly init --quiet-shell-followup -y \
     && echo '. ~/.local/share/swiftly/env.sh' >> /etc/profile \
     && bash -lc "swiftly install --use ${SWIFT_VERSION}" \

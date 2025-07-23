@@ -23,3 +23,6 @@ go.work.sum
 # Build outputs
 /bin/
 /dist/
+
+# Project-specific binaries
+codex-universal

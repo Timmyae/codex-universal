@@ -196,8 +196,8 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | \
 
 ### GO ###
 
-ARG GO_VERSION=1.23.8
-ARG GO_DOWNLOAD_SHA256=45b87381172a58d62c977f27c4683c8681ef36580abecd14fd124d24ca306d3f
+ARG GO_VERSION=1.23.11
+ARG GO_DOWNLOAD_SHA256=80899df77459e0b551d2eb8800ad6eb47023b99cccbf8129e7b5786770b948c5
 
 # Go defaults GOROOT to /usr/local/go - we just need to update PATH
 ENV PATH=/usr/local/go/bin:$HOME/go/bin:$PATH

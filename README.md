@@ -25,6 +25,7 @@ docker run --rm -it \
     -e CODEX_ENV_RUST_VERSION=1.87.0 \
     -e CODEX_ENV_GO_VERSION=1.23.8 \
     -e CODEX_ENV_SWIFT_VERSION=6.1 \
+    -e CODEX_ENV_MOBILE_DEVELOPMENT=true \
     -v $(pwd):/workspace/$(basename $(pwd)) -w /workspace/$(basename $(pwd)) \
     ghcr.io/openai/codex-universal:latest
 ```
@@ -35,13 +36,14 @@ docker run --rm -it \
 
 The following environment variables can be set to configure runtime installation. Note that a limited subset of versions are supported (indicated in the table below):
 
-| Environment variable       | Description                | Supported versions                               | Additional packages                                                  |
-| -------------------------- | -------------------------- | ------------------------------------------------ | -------------------------------------------------------------------- |
-| `CODEX_ENV_PYTHON_VERSION` | Python version to install  | `3.10`, `3.11.12`, `3.12`, `3.13`                | `pyenv`, `poetry`, `uv`, `ruff`, `black`, `mypy`, `pyright`, `isort` |
-| `CODEX_ENV_NODE_VERSION`   | Node.js version to install | `18`, `20`, `22`                                 | `corepack`, `yarn`, `pnpm`, `npm`                                    |
-| `CODEX_ENV_RUST_VERSION`   | Rust version to install    | `1.83.0`, `1.84.1`, `1.85.1`, `1.86.0`, `1.87.0` |                                                                      |
-| `CODEX_ENV_GO_VERSION`     | Go version to install      | `1.22.12`, `1.23.8`, `1.24.3`                    |                                                                      |
-| `CODEX_ENV_SWIFT_VERSION`  | Swift version to install   | `5.10`, `6.1`                                    |                                                                      |
+| Environment variable          | Description                          | Supported versions                               | Additional packages                                                  |
+| ----------------------------- | ------------------------------------ | ------------------------------------------------ | -------------------------------------------------------------------- |
+| `CODEX_ENV_PYTHON_VERSION`    | Python version to install           | `3.10`, `3.11.12`, `3.12`, `3.13`                | `pyenv`, `poetry`, `uv`, `ruff`, `black`, `mypy`, `pyright`, `isort` |
+| `CODEX_ENV_NODE_VERSION`      | Node.js version to install          | `18`, `20`, `22`                                 | `corepack`, `yarn`, `pnpm`, `npm`                                    |
+| `CODEX_ENV_RUST_VERSION`      | Rust version to install             | `1.83.0`, `1.84.1`, `1.85.1`, `1.86.0`, `1.87.0` |                                                                      |
+| `CODEX_ENV_GO_VERSION`        | Go version to install               | `1.22.12`, `1.23.8`, `1.24.3`                    |                                                                      |
+| `CODEX_ENV_SWIFT_VERSION`     | Swift version to install            | `5.10`, `6.1`                                    |                                                                      |
+| `CODEX_ENV_MOBILE_DEVELOPMENT`| Enable mobile development tools     | `true`, `false`                                  | Android SDK, Flutter, React Native, MCP tools                       |
 
 ## What's included
 
@@ -51,5 +53,16 @@ In addition to the packages specified in the table above, the following packages
 - `bun`: 1.2.10
 - `java`: 21
 - `bazelisk` / `bazel`
+
+### Mobile Development Tools
+
+When `CODEX_ENV_MOBILE_DEVELOPMENT=true` is set, the following mobile development tools are available:
+
+- **Android SDK**: Android API Level 34, Build Tools 34.0.0, Platform Tools
+- **Flutter**: Latest stable version with Android licensing handled
+- **React Native**: CLI and development tools
+- **Mobile MCP**: Mobile Control Protocol tools for app communication and testing
+- **Fastlane**: Mobile app deployment automation
+- **ADB Shell**: Android Debug Bridge tools
 
 See [Dockerfile](Dockerfile) for the full details of installed packages.

@@ -1,95 +1,87 @@
-name: Build and push
+#!/bin/bash
 
-on:
-  push:
-    branches:
-      - main
+set -euo pipefail
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+CODEX_ENV_PYTHON_VERSION=${CODEX_ENV_PYTHON_VERSION:-}
+CODEX_ENV_NODE_VERSION=${CODEX_ENV_NODE_VERSION:-}
+CODEX_ENV_RUST_VERSION=${CODEX_ENV_RUST_VERSION:-}
+CODEX_ENV_GO_VERSION=${CODEX_ENV_GO_VERSION:-}
+CODEX_ENV_SWIFT_VERSION=${CODEX_ENV_SWIFT_VERSION:-}
+CODEX_ENV_MOBILE_DEVELOPMENT=${CODEX_ENV_MOBILE_DEVELOPMENT:-}
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+echo "Configuring language runtimes..."
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+# Python config
+if [ -n "${CODEX_ENV_PYTHON_VERSION}" ]; then
+    echo "# Python: ${CODEX_ENV_PYTHON_VERSION}"
+    pyenv global "${CODEX_ENV_PYTHON_VERSION}"
+fi
 
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+# Node.js config
+if [ -n "${CODEX_ENV_NODE_VERSION}" ]; then
+    echo "# Node.js: ${CODEX_ENV_NODE_VERSION}"
+    . $NVM_DIR/nvm.sh
+    nvm alias default "${CODEX_ENV_NODE_VERSION}"
+    nvm use "${CODEX_ENV_NODE_VERSION}"
+    corepack enable
+    corepack install -g yarn pnpm npm
+fi
 
-      - name: Build and push
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: ghcr.io/timmyae/codex-universal:latest
+# Rust config
+if [ -n "${CODEX_ENV_RUST_VERSION}" ]; then
+    current=$(rustc --version | awk '{print $2}')
+    echo "# Rust: ${CODEX_ENV_RUST_VERSION} (default: ${current})"
+    if [ "${current}" != "${CODEX_ENV_RUST_VERSION}" ]; then
+        rustup toolchain install --no-self-update "${CODEX_ENV_RUST_VERSION}"
+        rustup default "${CODEX_ENV_RUST_VERSION}"
+    fi
+fi
 
-      - name: Configure language runtimes (optional)
-        run: |
-          set -euo pipefail
+# Go config
+if [ -n "${CODEX_ENV_GO_VERSION}" ]; then
+    current=$(go version | awk '{print $3}' | sed 's/go//')
+    echo "# Go: go${CODEX_ENV_GO_VERSION} (default: go${current})"
+    if [ "${current}" != "${CODEX_ENV_GO_VERSION}" ]; then
+        go install "golang.org/dl/go${CODEX_ENV_GO_VERSION}@latest"
+        "go${CODEX_ENV_GO_VERSION}" download
+        NEW_GO_ROOT=$("go${CODEX_ENV_GO_VERSION}" env GOROOT)
+        export PATH="${NEW_GO_ROOT}/bin:$PATH"
+        echo "export PATH=${NEW_GO_ROOT}/bin:\$PATH" >> /etc/profile
+        echo "# Switched to Go version: $(go version)"
+        if command -v golangci-lint >/dev/null 2>&1; then
+            golangci-lint --version
+        fi
+    fi
+fi
 
-          CODEX_ENV_PYTHON_VERSION=${CODEX_ENV_PYTHON_VERSION:-}
-          CODEX_ENV_NODE_VERSION=${CODEX_ENV_NODE_VERSION:-}
-          CODEX_ENV_RUST_VERSION=${CODEX_ENV_RUST_VERSION:-}
-          CODEX_ENV_GO_VERSION=${CODEX_ENV_GO_VERSION:-}
-          CODEX_ENV_SWIFT_VERSION=${CODEX_ENV_SWIFT_VERSION:-}
+# Swift config
+if [ -n "${CODEX_ENV_SWIFT_VERSION}" ]; then
+    current=$(swift --version | awk -F'version ' '{print $2}' | awk '{print $1}')
+    echo "# Swift: ${CODEX_ENV_SWIFT_VERSION} (default: ${current})"
+    if [ "${current}" != "${CODEX_ENV_SWIFT_VERSION}" ]; then
+        . ~/.local/share/swiftly/env.sh
+        swiftly install --use "${CODEX_ENV_SWIFT_VERSION}"
+    fi
+fi
 
-          echo "Configuring language runtimes..."
-
-          # Python config
-          if [ -n "${CODEX_ENV_PYTHON_VERSION}" ]; then
-              echo "# Python: ${CODEX_ENV_PYTHON_VERSION}"
-              pyenv global "${CODEX_ENV_PYTHON_VERSION}"
-          fi
-
-          # Node.js config
-          if [ -n "${CODEX_ENV_NODE_VERSION}" ]; then
-              echo "# Node.js: ${CODEX_ENV_NODE_VERSION}"
-              nvm alias default "${CODEX_ENV_NODE_VERSION}"
-              nvm use "${CODEX_ENV_NODE_VERSION}"
-              corepack enable
-              corepack install -g yarn pnpm npm
-          fi
-
-          # Rust config
-          if [ -n "${CODEX_ENV_RUST_VERSION}" ]; then
-              current=$(rustc --version | awk '{print $2}')
-              echo "# Rust: ${CODEX_ENV_RUST_VERSION} (default: ${current})"
-              if [ "${current}" != "${CODEX_ENV_RUST_VERSION}" ]; then
-                  rustup toolchain install --no-self-update "${CODEX_ENV_RUST_VERSION}"
-                  rustup default "${CODEX_ENV_RUST_VERSION}"
-              fi
-          fi
-
-          # Go config
-          if [ -n "${CODEX_ENV_GO_VERSION}" ]; then
-              current=$(go version | awk '{print $3}' | sed 's/go//')
-              echo "# Go: go${CODEX_ENV_GO_VERSION} (default: go${current})"
-              if [ "${current}" != "${CODEX_ENV_GO_VERSION}" ]; then
-                  go install "golang.org/dl/go${CODEX_ENV_GO_VERSION}@latest"
-                  "go${CODEX_ENV_GO_VERSION}" download
-                  NEW_GO_ROOT=$("go${CODEX_ENV_GO_VERSION}" env GOROOT)
-                  export PATH="${NEW_GO_ROOT}/bin:$PATH"
-                  echo "export PATH=${NEW_GO_ROOT}/bin:\$PATH" >> /etc/profile
-                  echo "# Switched to Go version: $(go version)"
-                  if command -v golangci-lint >/dev/null 2>&1; then
-                      golangci-lint --version
-                  fi
-              fi
-          fi
-
-          # Swift config
-          if [ -n "${CODEX_ENV_SWIFT_VERSION}" ]; then
-              current=$(swift --version | awk -F'version ' '{print $2}' | awk '{print $1}')
-              echo "# Swift: ${CODEX_ENV_SWIFT_VERSION} (default: ${current})"
-              if [ "${current}" != "${CODEX_ENV_SWIFT_VERSION}" ]; then
-                  swiftly install --use "${CODEX_ENV_SWIFT_VERSION}"
-              fi
-          fi
+# Mobile development config
+if [ "${CODEX_ENV_MOBILE_DEVELOPMENT}" = "true" ]; then
+    echo "# Configuring mobile development environment"
+    
+    # Accept Android licenses
+    yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses >/dev/null 2>&1 || true
+    
+    # Initialize Flutter
+    if command -v flutter >/dev/null 2>&1; then
+        flutter doctor --android-licenses >/dev/null 2>&1 || true
+        flutter config --no-analytics
+        echo "# Flutter initialized"
+    fi
+    
+    # Setup React Native environment
+    if command -v npx >/dev/null 2>&1; then
+        echo "# React Native CLI available"
+    fi
+    
+    echo "# Mobile development environment ready"
+fi

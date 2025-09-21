@@ -214,6 +214,39 @@ RUN curl -L --fail https://github.com/bazelbuild/bazelisk/releases/download/v1.2
     && chmod +x /usr/local/bin/bazelisk \
     && ln -s /usr/local/bin/bazelisk /usr/local/bin/bazel
 
+### MOBILE DEVELOPMENT ###
+
+# Android SDK and tools
+ARG ANDROID_SDK_VERSION=11076708
+ARG ANDROID_API_LEVEL=34
+ARG ANDROID_BUILD_TOOLS_VERSION=34.0.0
+
+ENV ANDROID_HOME=/opt/android-sdk
+ENV ANDROID_SDK_ROOT=$ANDROID_HOME
+ENV PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/$ANDROID_BUILD_TOOLS_VERSION
+
+RUN mkdir -p $ANDROID_HOME/cmdline-tools \
+    && cd $ANDROID_HOME/cmdline-tools \
+    && curl -O https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_VERSION}_latest.zip \
+    && unzip commandlinetools-linux-${ANDROID_SDK_VERSION}_latest.zip \
+    && mv cmdline-tools latest \
+    && rm commandlinetools-linux-${ANDROID_SDK_VERSION}_latest.zip \
+    && yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true \
+    && $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-${ANDROID_API_LEVEL}" "build-tools;${ANDROID_BUILD_TOOLS_VERSION}" \
+    && $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "extras;android;m2repository" "extras;google;m2repository"
+
+# Flutter
+RUN curl -L https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.24.3-stable.tar.xz -o flutter.tar.xz \
+    && tar xf flutter.tar.xz -C /opt \
+    && rm flutter.tar.xz
+
+ENV PATH=$PATH:/opt/flutter/bin
+
+# Mobile development tools (install after Node.js and Python are available)
+RUN . $NVM_DIR/nvm.sh && npm install -g @react-native-community/cli react-native \
+    && . "$HOME/.cargo/env" && echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> /etc/profile \
+    && gem install fastlane
+
 ### LLVM ###
 RUN apt-get update && apt-get install -y --no-install-recommends \
         git \

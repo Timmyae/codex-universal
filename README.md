@@ -61,8 +61,26 @@ When `CODEX_ENV_MOBILE_DEVELOPMENT=true` is set, the following mobile developmen
 - **Android SDK**: Android API Level 34, Build Tools 34.0.0, Platform Tools
 - **Flutter**: Latest stable version with Android licensing handled
 - **React Native**: CLI and development tools
-- **Mobile MCP**: Mobile Control Protocol tools for app communication and testing
+- **Mobile MCP CLI**: Custom Mobile Control Protocol CLI for project management and automation
 - **Fastlane**: Mobile app deployment automation
-- **ADB Shell**: Android Debug Bridge tools
+
+#### Using Mobile MCP CLI
+
+The Mobile MCP CLI provides streamlined commands for mobile development:
+
+```bash
+# Initialize mobile development environment
+mobile-mcp init
+
+# Check environment status
+mobile-mcp doctor
+
+# Create new projects
+mobile-mcp create react-native MyReactApp
+mobile-mcp create flutter my_flutter_app
+
+# Get help
+mobile-mcp help
+```
 
 See [Dockerfile](Dockerfile) for the full details of installed packages.

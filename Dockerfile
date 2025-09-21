@@ -247,6 +247,10 @@ RUN . $NVM_DIR/nvm.sh && npm install -g @react-native-community/cli react-native
     && . "$HOME/.cargo/env" && echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> /etc/profile \
     && gem install fastlane
 
+# Add mobile-mcp CLI tool
+COPY mobile-mcp-cli.sh /usr/local/bin/mobile-mcp
+RUN chmod +x /usr/local/bin/mobile-mcp
+
 ### LLVM ###
 RUN apt-get update && apt-get install -y --no-install-recommends \
         git \

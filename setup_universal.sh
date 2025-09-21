@@ -68,20 +68,12 @@ fi
 if [ "${CODEX_ENV_MOBILE_DEVELOPMENT}" = "true" ]; then
     echo "# Configuring mobile development environment"
     
-    # Accept Android licenses
-    yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses >/dev/null 2>&1 || true
-    
-    # Initialize Flutter
-    if command -v flutter >/dev/null 2>&1; then
-        flutter doctor --android-licenses >/dev/null 2>&1 || true
-        flutter config --no-analytics
-        echo "# Flutter initialized"
-    fi
-    
-    # Setup React Native environment
-    if command -v npx >/dev/null 2>&1; then
-        echo "# React Native CLI available"
+    # Initialize mobile development environment using mobile-mcp
+    if command -v mobile-mcp >/dev/null 2>&1; then
+        mobile-mcp init
     fi
     
     echo "# Mobile development environment ready"
+    echo "# Use 'mobile-mcp doctor' to check environment status"
+    echo "# Use 'mobile-mcp create <react-native|flutter> <project-name>' to create projects"
 fi

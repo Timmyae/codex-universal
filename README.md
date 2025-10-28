@@ -1,27 +1,48 @@
 # codex-universal
 
-`codex-universal` is a reference implementation of the base Docker image available in [OpenAI Codex](http://platform.openai.com/docs/codex).
+## 🎯 Universal Workflow Dashboard
 
-This repository is intended to help developers cutomize environments in Codex, by providing a similar image that can be pulled and run locally. This is not an identical environment but should help for debugging and development.
+### 📊 Real-Time Status Monitor
 
-For more details on environment setup, see [OpenAI Codex](http://platform.openai.com/docs/codex).
+| Workflow Name | Status | Last Test | Build # | Next Check | Actions/Notes |
+|--------------|--------|-----------|---------|------------|---------------|
+| Build Image | ![Status](https://github.com/Timmyae/codex-universal/actions/workflows/build-image.yml/badge.svg) | Auto | Latest | Live | Container build & push |
+| Go Workflow | ![Status](https://github.com/Timmyae/codex-universal/actions/workflows/go.yml/badge.svg) | Auto | Latest | Live | Go tests & validation |
+| Dashboard Monitor | ![Status](https://github.com/Timmyae/codex-universal/actions/workflows/dashboard-monitor.yml/badge.svg) | Auto | Latest | Live | Monitors all workflows |
+| Health Check | ![Status](https://github.com/Timmyae/codex-universal/actions/workflows/health-check.yml/badge.svg) | Auto | Latest | 15min | System health validation |
 
-## Usage
+### 🔄 Automatic Workflow Registration
 
-The Docker image is available at:
+All new workflows added to `.github/workflows/` are automatically:
+- ✅ Detected and registered
+- ✅ Monitored for status changes
+- ✅ Tested on every commit
+- ✅ Included in dashboard updates
+- ✅ Linked to notification system
 
+### 📈 Workflow Statistics
+
+```yaml
+Total Workflows: Auto-counted
+Active Monitors: Real-time
+Success Rate: Calculated automatically
+Last Dashboard Update: Auto-updated on every commit
 ```
-docker pull ghcr.io/openai/codex-universal:latest
-```
 
-The below script shows how can you approximate the `setup` environment in Codex:
+### 🛠️ Quick Actions
 
-```sh
-# See below for environment variable options.
-# This script mounts the current directory similar to how it would get cloned in.
+- [View All Workflow Runs](https://github.com/Timmyae/codex-universal/actions)
+- [Create New Workflow](https://github.com/Timmyae/codex-universal/actions/new)
+- [Workflow Settings](https://github.com/Timmyae/codex-universal/settings/actions)
+
+---
+
+## 🚀 Docker Usage
+
+```bash
 docker run --rm -it \
-    -e CODEX_ENV_PYTHON_VERSION=3.12 \
-    -e CODEX_ENV_NODE_VERSION=20 \
+    -e CODEX_ENV_PYTHON_VERSION=3.13 \
+    -e CODEX_ENV_NODE_VERSION=22 \
     -e CODEX_ENV_RUST_VERSION=1.87.0 \
     -e CODEX_ENV_GO_VERSION=1.23.8 \
     -e CODEX_ENV_SWIFT_VERSION=6.1 \
@@ -53,3 +74,47 @@ In addition to the packages specified in the table above, the following packages
 - `bazelisk` / `bazel`
 
 See [Dockerfile](Dockerfile) for the full details of installed packages.
+
+---
+
+## 📋 Workflow Integration Guide
+
+### Adding New Workflows
+
+1. Create workflow file in `.github/workflows/`
+2. Dashboard auto-detects and registers it
+3. Status badge auto-generated
+4. Monitoring starts immediately
+
+### Template for New Workflows
+
+```yaml
+name: Your Workflow Name
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  your-job:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Your steps here
+        run: echo "Workflow running"
+```
+
+### Dashboard Auto-Update
+
+The dashboard updates automatically via:
+- **Commit hooks**: Updates on every push
+- **Scheduled checks**: Every 15 minutes
+- **Workflow completion**: After each workflow run
+- **Manual trigger**: Via workflow_dispatch
+
+---
+
+*Dashboard powered by GitHub Actions • Auto-monitoring enabled • Last updated: Automatic*

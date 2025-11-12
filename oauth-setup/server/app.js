@@ -2,7 +2,10 @@ const express = require('express');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const cors = require('cors');
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
 const { validateRedirectUri } = require('./middleware/redirect-validation.middleware');
+const tiktokRoutes = require('./routes/auth/tiktok.routes');
 const {
   generateAccessToken,
   generateRefreshToken,
@@ -63,6 +66,24 @@ app.use(limiter);
 // Body parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Session middleware (required for TikTok OAuth)
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'your-session-secret-change-this',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
+}));
+
+// Cookie parser middleware (required for TikTok OAuth)
+app.use(cookieParser());
+
+// TikTok OAuth routes
+app.use('/auth', tiktokRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {

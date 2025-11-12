@@ -26,3 +26,9 @@ go.work.sum
 
 # Project-specific binaries
 codex-universal
+
+# OAuth setup Node.js dependencies
+oauth-setup/node_modules/
+oauth-setup/.env
+oauth-setup/package-lock.json
+oauth-setup/logs/

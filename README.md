@@ -117,4 +117,48 @@ The dashboard updates automatically via:
 
 ---
 
+## 🔐 OAuth Authentication Setup
+
+A comprehensive OAuth authentication system is now available in the `oauth-setup/` directory!
+
+### ✨ Features
+
+- ✅ **Multi-Provider Support**: GitHub (ready), Google, Facebook, Twitter (configured)
+- ✅ **JWT Authentication**: Secure token-based authentication
+- ✅ **Universal**: Works with web, React Native, Flutter, and more
+- ✅ **Production-Ready**: Complete with Docker, security best practices
+- ✅ **Bilingual**: Full English and Arabic support
+
+### 🚀 Quick Start
+
+```bash
+cd oauth-setup
+npm install
+cp .env.example .env
+# Configure your GitHub OAuth credentials in .env
+npm start
+```
+
+### 📚 Documentation
+
+- **[Complete Setup Guide](oauth-setup/README.md)** - Comprehensive documentation
+- **[Quick Start Guide](oauth-setup/QUICKSTART.md)** - Get started in 5 minutes
+- **[Security Best Practices](oauth-setup/SECURITY.md)** - Security guidelines
+- **[Integration Examples](oauth-setup/examples/)** - Web, React Native, Flutter examples
+
+### 🎯 What's Included
+
+```
+oauth-setup/
+├── server/           # Express.js OAuth server
+├── tests/            # Test scripts and Postman collection
+├── examples/         # Integration examples (Web, React Native, Flutter)
+├── Dockerfile        # Docker deployment
+└── docs/             # Comprehensive documentation
+```
+
+For detailed information, see the [OAuth Setup README](oauth-setup/README.md).
+
+---
+
 *Dashboard powered by GitHub Actions • Auto-monitoring enabled • Last updated: Automatic*

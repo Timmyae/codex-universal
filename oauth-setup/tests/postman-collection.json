@@ -1,0 +1,185 @@
+{
+  "info": {
+    "name": "Codex Universal OAuth API",
+    "description": "Complete OAuth authentication API for Codex Universal project",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{auth_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health & Status",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Check if the OAuth server is running and healthy"
+          },
+          "response": []
+        },
+        {
+          "name": "Get API Documentation",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/docs",
+              "host": ["{{baseUrl}}"],
+              "path": ["docs"]
+            },
+            "description": "Get API documentation with all available endpoints"
+          },
+          "response": []
+        },
+        {
+          "name": "Root Endpoint",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": ["{{baseUrl}}"],
+              "path": [""]
+            },
+            "description": "Get basic server information"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "OAuth Authentication",
+      "item": [
+        {
+          "name": "Get Enabled Providers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/providers",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "providers"]
+            },
+            "description": "Get list of enabled OAuth providers"
+          },
+          "response": []
+        },
+        {
+          "name": "Initiate GitHub OAuth",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/github",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "github"]
+            },
+            "description": "Redirects to GitHub authorization page. Use in browser."
+          },
+          "response": []
+        },
+        {
+          "name": "Check Auth Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "status"]
+            },
+            "description": "Check current authentication status"
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "logout"]
+            },
+            "description": "Logout and clear session"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Protected Routes",
+      "item": [
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
+            },
+            "description": "Get current authenticated user profile. Requires JWT token."
+          },
+          "response": []
+        },
+        {
+          "name": "Protected Example",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/protected",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "protected"]
+            },
+            "description": "Example protected route. Requires JWT token."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

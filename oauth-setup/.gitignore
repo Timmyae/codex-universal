@@ -1,0 +1,43 @@
+# Dependencies / التبعيات
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Environment variables / متغيرات البيئة
+.env
+.env.local
+.env.production
+.env.development
+
+# Logs / السجلات
+logs/
+*.log
+
+# Runtime data / بيانات وقت التشغيل
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Testing / الاختبار
+coverage/
+.nyc_output/
+
+# Build output / مخرجات البناء
+dist/
+build/
+
+# IDE / بيئة التطوير المتكاملة
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Temporary files / الملفات المؤقتة
+tmp/
+temp/

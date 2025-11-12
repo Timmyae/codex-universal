@@ -1,0 +1,36 @@
+{
+  "name": "codex-universal-oauth",
+  "version": "1.0.0",
+  "description": "OAuth authentication service for codex-universal project",
+  "main": "server/app.js",
+  "scripts": {
+    "start": "node server/app.js",
+    "dev": "nodemon server/app.js",
+    "test": "echo \"No test specified yet\" && exit 0"
+  },
+  "keywords": [
+    "oauth",
+    "authentication",
+    "github",
+    "express",
+    "jwt"
+  ],
+  "author": "Codex Universal Team",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "axios": "^1.6.2",
+    "jsonwebtoken": "^9.0.2",
+    "dotenv": "^16.3.1",
+    "cors": "^2.8.5",
+    "express-session": "^1.17.3",
+    "express-rate-limit": "^7.1.5",
+    "cookie-parser": "^1.4.6"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

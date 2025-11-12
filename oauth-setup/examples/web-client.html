@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OAuth Demo - Codex Universal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 100%;
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .status {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .status.logged-out {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .status.logged-in {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn-github {
+            background: #24292e;
+            color: white;
+        }
+        
+        .btn-github:hover {
+            background: #1a1e22;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn-logout {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-logout:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+        }
+        
+        .btn-api {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-api:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+        }
+        
+        .user-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .user-info h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .user-info p {
+            color: #666;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .user-info strong {
+            color: #333;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .token-display {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            word-break: break-all;
+            color: #333;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #666;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 OAuth Demo</h1>
+        <p class="subtitle">Codex Universal Authentication System</p>
+        
+        <!-- Logged Out View -->
+        <div id="logged-out-view">
+            <div class="status logged-out">
+                ⚠️ Not authenticated. Please login.
+            </div>
+            <button class="btn btn-github" onclick="loginWithGitHub()">
+                <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+                </svg>
+                Login with GitHub
+            </button>
+        </div>
+        
+        <!-- Logged In View -->
+        <div id="logged-in-view" class="hidden">
+            <div class="status logged-in">
+                ✅ Authenticated successfully!
+            </div>
+            
+            <div class="user-info">
+                <h3>👤 User Profile</h3>
+                <p><strong>ID:</strong> <span id="user-id">-</span></p>
+                <p><strong>Email:</strong> <span id="user-email">-</span></p>
+                <p><strong>Username:</strong> <span id="user-username">-</span></p>
+                <p><strong>Provider:</strong> <span id="user-provider">-</span></p>
+            </div>
+            
+            <div class="token-display">
+                <strong>🔑 JWT Token:</strong><br>
+                <span id="token-display">Loading...</span>
+            </div>
+            
+            <button class="btn btn-api" onclick="testProtectedAPI()">
+                Test Protected API
+            </button>
+            
+            <button class="btn btn-logout" onclick="logout()">
+                Logout
+            </button>
+        </div>
+        
+        <div class="footer">
+            Made with ❤️ for Codex Universal
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE_URL = 'http://localhost:3000';
+        
+        // Check authentication status on load
+        window.addEventListener('load', checkAuthStatus);
+        
+        async function checkAuthStatus() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/status`, {
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                if (data.authenticated && data.user) {
+                    showLoggedInView(data.user);
+                } else {
+                    showLoggedOutView();
+                }
+            } catch (error) {
+                console.error('Error checking auth status:', error);
+                showLoggedOutView();
+            }
+        }
+        
+        function loginWithGitHub() {
+            // Redirect to OAuth server
+            window.location.href = `${API_BASE_URL}/auth/github`;
+        }
+        
+        async function logout() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/logout`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Clear local storage
+                    localStorage.removeItem('auth_token');
+                    showLoggedOutView();
+                    alert('Logged out successfully!');
+                } else {
+                    alert('Logout failed: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error logging out:', error);
+                alert('Error logging out. Please try again.');
+            }
+        }
+        
+        async function testProtectedAPI() {
+            try {
+                const token = localStorage.getItem('auth_token');
+                
+                if (!token) {
+                    alert('No token found. Please login again.');
+                    return;
+                }
+                
+                const response = await fetch(`${API_BASE_URL}/auth/me`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('Protected API Test Successful!\n\n' + JSON.stringify(data.user, null, 2));
+                } else {
+                    alert('API Test Failed: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error testing API:', error);
+                alert('Error testing protected API. Check console for details.');
+            }
+        }
+        
+        function showLoggedInView(user) {
+            document.getElementById('logged-out-view').classList.add('hidden');
+            document.getElementById('logged-in-view').classList.remove('hidden');
+            
+            // Display user information
+            document.getElementById('user-id').textContent = user.id || user.userId || '-';
+            document.getElementById('user-email').textContent = user.email || '-';
+            document.getElementById('user-username').textContent = user.username || '-';
+            document.getElementById('user-provider').textContent = user.provider || '-';
+            
+            // Display token if available
+            const token = localStorage.getItem('auth_token');
+            if (token) {
+                document.getElementById('token-display').textContent = token.substring(0, 50) + '...';
+            } else {
+                document.getElementById('token-display').textContent = 'Token stored in session';
+            }
+        }
+        
+        function showLoggedOutView() {
+            document.getElementById('logged-out-view').classList.remove('hidden');
+            document.getElementById('logged-in-view').classList.add('hidden');
+        }
+        
+        // Handle OAuth callback (if token is in URL)
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+        
+        if (token) {
+            // Store token
+            localStorage.setItem('auth_token', token);
+            
+            // Clean URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+            
+            // Check auth status
+            checkAuthStatus();
+        }
+    </script>
+</body>
+</html>

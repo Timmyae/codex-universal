@@ -289,6 +289,10 @@ describe('Redirect Validation - Safe URL Building', () => {
     });
 
     test('should handle URI with existing query parameters', () => {
+      // Add URI with query params to whitelist
+      const originalValue = process.env.ALLOWED_REDIRECT_URIS;
+      process.env.ALLOWED_REDIRECT_URIS = 'http://localhost:3000/callback?existing=param,http://localhost:3000/callback,https://example.com/callback';
+      
       const baseUri = 'http://localhost:3000/callback?existing=param';
       const state = 'state123';
       const code = 'code456';
@@ -298,6 +302,9 @@ describe('Redirect Validation - Safe URL Building', () => {
       expect(url).toContain('existing=param');
       expect(url).toContain('state=state123');
       expect(url).toContain('code=code456');
+      
+      // Restore original value
+      process.env.ALLOWED_REDIRECT_URIS = originalValue;
     });
 
     test('should throw error for invalid redirect URI', () => {

@@ -283,19 +283,19 @@ describe('PKCE Utils - Base64URL Encoding / أدوات PKCE - ترميز Base64U
       expect(encoded).toBe('SGVsbG8gV29ybGQ');
     });
 
-    test('should replace + with -', () => {
-      const buffer = Buffer.from('?>'); // Creates '+' in standard base64
+    test('should replace + with - and / with _', () => {
+      // Create a buffer that when base64 encoded contains + and /
+      // Standard base64 of bytes [0xfb, 0xff] is "+/8="
+      const buffer = Buffer.from([0xfb, 0xff]);
       const encoded = base64UrlEncode(buffer);
       
+      // Should not contain + or /
       expect(encoded).not.toContain('+');
-      expect(encoded).toContain('-');
-    });
-
-    test('should replace / with _', () => {
-      const buffer = Buffer.from('?'); // Creates '/' in standard base64
-      const encoded = base64UrlEncode(buffer);
-      
       expect(encoded).not.toContain('/');
+      
+      // Should contain - and _ instead
+      expect(encoded).toContain('-');
+      expect(encoded).toContain('_');
     });
 
     test('should remove padding (=)', () => {

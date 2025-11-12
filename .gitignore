@@ -26,3 +26,12 @@ go.work.sum
 
 # Project-specific binaries
 codex-universal
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Test coverage
+coverage/
+*.lcov

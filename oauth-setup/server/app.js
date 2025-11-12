@@ -42,6 +42,10 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 // Session middleware (for storing code_verifier and state)
+// Note: Cookie security (secure flag) is environment-dependent
+// - Production: secure=true (HTTPS only)
+// - Development: secure=false (allows HTTP for local testing)
+// This is intentional and documented in security guidelines
 app.use(session(oauthConfig.session));
 
 // General rate limiting

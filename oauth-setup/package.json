@@ -1,0 +1,49 @@
+{
+  "name": "codex-universal-oauth",
+  "version": "1.0.0",
+  "description": "Secure OAuth 2.0 implementation with PKCE, token rotation, and comprehensive security features",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "nodemon server/server.js",
+    "test": "jest --coverage",
+    "test:watch": "jest --watch",
+    "test:unit": "jest tests/unit",
+    "test:integration": "jest tests/integration",
+    "test:security": "jest tests/security",
+    "lint": "eslint server/"
+  },
+  "keywords": [
+    "oauth",
+    "pkce",
+    "security",
+    "authentication",
+    "jwt",
+    "token-rotation"
+  ],
+  "author": "Codex Universal",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "axios": "^1.6.0",
+    "jsonwebtoken": "^9.0.2",
+    "dotenv": "^16.3.1",
+    "cors": "^2.8.5",
+    "express-session": "^1.17.3",
+    "express-rate-limit": "^7.1.5",
+    "helmet": "^7.1.0",
+    "morgan": "^1.10.0",
+    "uuid": "^9.0.1",
+    "redis": "^4.6.11"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^6.3.3",
+    "@types/jest": "^29.5.8",
+    "eslint": "^8.54.0",
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

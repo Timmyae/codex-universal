@@ -1,0 +1,61 @@
+name: OAuth Setup CI
+
+on:
+  push:
+    paths:
+      - 'oauth-setup/**'
+      - '.github/workflows/**'
+  pull_request:
+    paths:
+      - 'oauth-setup/**'
+      - '.github/workflows/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x]
+    
+    defaults:
+      run:
+        working-directory: oauth-setup
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: oauth-setup/package-lock.json
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run tests
+        run: npm test
+        env:
+          # TikTok OAuth Configuration
+          # Use secrets if available, fallback to dummy values for testing
+          TIKTOK_CLIENT_ID: ${{ secrets.TIKTOK_CLIENT_ID || 'dummy_client_id_for_ci' }}
+          TIKTOK_CLIENT_SECRET: ${{ secrets.TIKTOK_CLIENT_SECRET || 'dummy_client_secret_for_ci' }}
+          TIKTOK_REDIRECT_URI: ${{ secrets.TIKTOK_REDIRECT_URI || 'http://localhost:3000/auth/tiktok/callback' }}
+          ALLOWED_REDIRECT_URIS: ${{ secrets.ALLOWED_REDIRECT_URIS || 'http://localhost:3000/auth/tiktok/callback,http://localhost:8080/auth/tiktok/callback' }}
+          # Other required environment variables
+          JWT_SECRET: test-jwt-secret-for-ci
+          JWT_ACCESS_TOKEN_EXPIRY: 15m
+          JWT_REFRESH_TOKEN_EXPIRY: 7d
+          NODE_ENV: test
+          SESSION_SECRET: test-session-secret-for-ci
+      
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jest-coverage-${{ matrix.node-version }}
+          path: oauth-setup/coverage/
+          retention-days: 30

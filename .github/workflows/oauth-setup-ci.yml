@@ -1,0 +1,79 @@
+name: oauth-setup CI
+
+on:
+  push:
+    paths:
+      - 'oauth-setup/**'
+      - '.github/workflows/**'
+  pull_request:
+    paths:
+      - 'oauth-setup/**'
+      - '.github/workflows/**'
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: Run oauth-setup tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Cache node modules (oauth-setup)
+        uses: actions/cache@v4
+        with:
+          path: oauth-setup/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('oauth-setup/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        working-directory: oauth-setup
+        run: npm ci
+
+      - name: Run unit tests
+        working-directory: oauth-setup
+        run: npm run test:unit
+        env:
+          NODE_ENV: test
+
+      - name: Run integration tests (conditional)
+        if: ${{ secrets.OAUTH_INTEGRATION_TOKEN != '' }}
+        working-directory: oauth-setup
+        run: |
+          echo "Integration secret present — running integration tests"
+          npm run test:integration
+        env:
+          NODE_ENV: test
+          TIKTOK_CLIENT_ID: ${{ secrets.TIKTOK_CLIENT_ID }}
+          TIKTOK_CLIENT_SECRET: ${{ secrets.TIKTOK_CLIENT_SECRET }}
+          TIKTOK_REDIRECT_URI: ${{ secrets.TIKTOK_REDIRECT_URI }}
+          ALLOWED_REDIRECT_URIS: ${{ secrets.ALLOWED_REDIRECT_URIS }}
+
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: oauth-setup-coverage
+          path: oauth-setup/coverage
+          retention-days: 30
+
+      - name: Upload test results (if any)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: oauth-setup-test-logs
+          path: |
+            oauth-setup/test-results
+            oauth-setup/jest*.log
+          if-no-files-found: ignore
+          retention-days: 7

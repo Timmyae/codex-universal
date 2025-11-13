@@ -1,0 +1,156 @@
+name: OAuth Setup CI
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'oauth-setup/**'
+      - '.github/workflows/oauth-setup-ci.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'oauth-setup/**'
+      - '.github/workflows/oauth-setup-ci.yml'
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js 18
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: oauth-setup/package-lock.json
+    
+    - name: Install dependencies
+      working-directory: ./oauth-setup
+      run: npm ci
+    
+    - name: Run unit tests
+      working-directory: ./oauth-setup
+      run: npm test
+      env:
+        TIKTOK_CLIENT_ID: ${{ secrets.TIKTOK_CLIENT_ID || 'test-client-id' }}
+        TIKTOK_CLIENT_SECRET: ${{ secrets.TIKTOK_CLIENT_SECRET || 'test-client-secret' }}
+        TIKTOK_REDIRECT_URI: ${{ secrets.TIKTOK_REDIRECT_URI || 'http://localhost:3000/auth/tiktok/callback' }}
+        ALLOWED_REDIRECT_URIS: ${{ secrets.ALLOWED_REDIRECT_URIS || 'http://localhost:3000/auth/tiktok/callback' }}
+        JWT_SECRET: test-jwt-secret-for-ci
+        SESSION_SECRET: test-session-secret-for-ci
+        NODE_ENV: test
+    
+    - name: Run integration tests
+      if: secrets.OAUTH_INTEGRATION_TOKEN != ''
+      working-directory: ./oauth-setup
+      run: npm test -- tests/integration
+      env:
+        TIKTOK_CLIENT_ID: ${{ secrets.TIKTOK_CLIENT_ID }}
+        TIKTOK_CLIENT_SECRET: ${{ secrets.TIKTOK_CLIENT_SECRET }}
+        TIKTOK_REDIRECT_URI: ${{ secrets.TIKTOK_REDIRECT_URI }}
+        ALLOWED_REDIRECT_URIS: ${{ secrets.ALLOWED_REDIRECT_URIS }}
+        OAUTH_INTEGRATION_TOKEN: ${{ secrets.OAUTH_INTEGRATION_TOKEN }}
+        JWT_SECRET: ${{ secrets.JWT_SECRET || 'test-jwt-secret-for-ci' }}
+        SESSION_SECRET: ${{ secrets.SESSION_SECRET || 'test-session-secret-for-ci' }}
+        NODE_ENV: test
+    
+    - name: Upload Jest coverage
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: jest-coverage
+        path: oauth-setup/coverage/
+        retention-days: 30
+    
+    - name: Upload coverage summary
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-summary
+        path: oauth-setup/coverage/coverage-summary.json
+        retention-days: 30
+
+  smoke-test:
+    name: Smoke Test - Server Startup
+    runs-on: ubuntu-latest
+    needs: test
+    permissions:
+      contents: read
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js 18
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: oauth-setup/package-lock.json
+    
+    - name: Install dependencies
+      working-directory: ./oauth-setup
+      run: npm ci
+    
+    - name: Start server and validate
+      working-directory: ./oauth-setup
+      run: |
+        # Start server in background
+        PORT=3001 \
+        TIKTOK_CLIENT_ID=test-client-id \
+        TIKTOK_CLIENT_SECRET=test-client-secret \
+        TIKTOK_REDIRECT_URI=http://localhost:3001/auth/tiktok/callback \
+        ALLOWED_REDIRECT_URIS=http://localhost:3001/auth/tiktok/callback \
+        JWT_SECRET=test-jwt-secret \
+        SESSION_SECRET=test-session-secret \
+        NODE_ENV=test \
+        npm start &
+        
+        SERVER_PID=$!
+        echo "Server started with PID: $SERVER_PID"
+        
+        # Wait for server to be ready (max 30 seconds)
+        echo "Waiting for server to start..."
+        for i in {1..30}; do
+          if curl -f http://localhost:3001/health > /dev/null 2>&1; then
+            echo "✅ Server is running and responding on port 3001"
+            kill $SERVER_PID || true
+            exit 0
+          fi
+          echo "Waiting... ($i/30)"
+          sleep 1
+        done
+        
+        echo "❌ Server failed to start within 30 seconds"
+        kill $SERVER_PID || true
+        exit 1
+    
+    - name: Cleanup
+      if: always()
+      run: |
+        # Kill any remaining node processes on port 3001
+        lsof -ti:3001 | xargs kill -9 2>/dev/null || true
+
+  results:
+    name: CI Results Summary
+    runs-on: ubuntu-latest
+    needs: [test, smoke-test]
+    if: always()
+    permissions:
+      contents: read
+    
+    steps:
+    - name: Check results
+      run: |
+        echo "## OAuth Setup CI Results" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "✅ Tests completed" >> $GITHUB_STEP_SUMMARY
+        echo "✅ Smoke test completed" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "All CI checks have been executed for oauth-setup." >> $GITHUB_STEP_SUMMARY

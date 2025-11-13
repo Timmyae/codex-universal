@@ -12,10 +12,13 @@ cd "$(dirname "$0")/.."
 echo "==> Running oauth-setup CI helper (working dir: $(pwd))"
 
 # Install deps
-if [ -f package-lock.json ] || [ -f package.json ]; then
+if [ -f package-lock.json ]; then
   npm ci
-else
+elif [ -f package.json ]; then
   npm install
+else
+  echo "Error: No package.json found in $(pwd)"
+  exit 1
 fi
 
 # Provide placeholder environment variables for providers so unit tests that mock external calls can run

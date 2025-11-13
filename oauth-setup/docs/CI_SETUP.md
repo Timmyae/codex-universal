@@ -11,7 +11,7 @@ This document explains how CI runs for oauth-setup and how to run the same check
 1. Install dependencies
 
    cd oauth-setup
-   npm ci
+   npm ci  # or npm install if you don't have package-lock.json
 
 2. Run unit tests
 

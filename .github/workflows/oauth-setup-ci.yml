@@ -49,7 +49,7 @@ jobs:
           NODE_ENV: test
 
       - name: Run integration tests (conditional)
-        if: ${{ secrets.OAUTH_INTEGRATION_TOKEN != '' }}
+        if: ${{ secrets.OAUTH_INTEGRATION_TOKEN }}
         working-directory: oauth-setup
         run: |
           echo "Integration secret present — running integration tests"
@@ -74,5 +74,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: oauth-setup-test-logs
-          path: oauth-setup/test-results || oauth-setup/jest*.log || ''
+          path: |
+            oauth-setup/test-results
+            oauth-setup/jest*.log
           retention-days: 7
+          if-no-files-found: ignore

@@ -72,5 +72,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: oauth-setup-test-logs
-          path: oauth-setup/test-results || oauth-setup/jest*.log || ''
+          path: |
+            oauth-setup/test-results
+            oauth-setup/jest*.log
+          if-no-files-found: ignore
           retention-days: 7

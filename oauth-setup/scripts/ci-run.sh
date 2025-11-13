@@ -12,7 +12,7 @@ cd "$(dirname "$0")/.."
 echo "==> Running oauth-setup CI helper (working dir: $(pwd))"
 
 # Install deps
-if [ -f package-lock.json ] || [ -f package.json ]; then
+if [ -f package-lock.json ]; then
   npm ci
 else
   npm install

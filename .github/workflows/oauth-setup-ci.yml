@@ -16,6 +16,8 @@ jobs:
   test:
     name: Run Tests
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     
     steps:
     - name: Checkout code
@@ -78,6 +80,8 @@ jobs:
     name: Smoke Test - Server Startup
     runs-on: ubuntu-latest
     needs: test
+    permissions:
+      contents: read
     
     steps:
     - name: Checkout code
@@ -138,6 +142,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [test, smoke-test]
     if: always()
+    permissions:
+      contents: read
     
     steps:
     - name: Check results

@@ -18,5 +18,8 @@ module.exports = {
   testMatch: [
     '**/tests/**/*.test.js'
   ],
+  setupFiles: [
+    '<rootDir>/tests/integration/.github-ci-env.js'
+  ],
   verbose: true
 };

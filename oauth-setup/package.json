@@ -5,9 +5,11 @@
   "main": "server/server.js",
   "scripts": {
     "start": "node server/server.js",
-    "test": "jest --coverage",
+    "test": "jest --runInBand --coverage",
     "test:watch": "jest --watch",
-    "test:unit": "jest tests/unit"
+    "test:unit": "jest tests/unit --runInBand",
+    "test:integration": "jest tests/integration --runInBand",
+    "ci": "npm run test"
   },
   "keywords": [
     "oauth",

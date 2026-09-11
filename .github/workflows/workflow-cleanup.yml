@@ -16,32 +16,32 @@ jobs:
     permissions:
       contents: write
       actions: write
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
+
       - name: Analyze failed workflows
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "🔍 Analyzing workflow failures..."
-          
+
           # Get recent failed runs
           curl -s -H "Authorization: token $GITHUB_TOKEN" \
             -H "Accept: application/vnd.github.v3+json" \
             "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runs?status=failure&per_page=20" \
             | jq -r '.workflow_runs[] | "\(.name) - \(.conclusion) - \(.html_url)"' || echo "No failed workflows found"
-      
+
       - name: Check for missing dependencies
         run: |
           echo "📦 Checking for missing project files..."
-          
+
           # Check if workflows reference files that don't exist
           missing_files=""
-          
+
           # Check for Go project
           if grep -q "setup-go" .github/workflows/*.yml 2>/dev/null; then
             if [ ! -f "go.mod" ] && [ ! -f "main.go" ]; then
@@ -49,7 +49,7 @@ jobs:
               missing_files="$missing_files go"
             fi
           fi
-          
+
           # Check for Dockerfile
           if grep -q "docker" .github/workflows/*.yml 2>/dev/null; then
             if [ ! -f "Dockerfile" ]; then
@@ -57,95 +57,95 @@ jobs:
               missing_files="$missing_files docker"
             fi
           fi
-          
+
           echo "missing_files=$missing_files" >> $GITHUB_ENV
-      
+
       - name: Create placeholder Go module if needed
         if: contains(env.missing_files, 'go')
         run: |
           echo "🔧 Creating placeholder Go module..."
           cat > go.mod << 'EOF'
-module github.com/Timmyae/codex-universal
+          module github.com/Timmyae/codex-universal
 
-go 1.23
-EOF
-          
+          go 1.23
+          EOF
+
           cat > main.go << 'EOF'
-package main
+          package main
 
-import "fmt"
+          import "fmt"
 
-func main() {
-    fmt.Println("Codex Universal - Placeholder")
-    fmt.Println("Status: Operational")
-}
-EOF
-          
+          func main() {
+              fmt.Println("Codex Universal - Placeholder")
+              fmt.Println("Status: Operational")
+          }
+          EOF
+
           cat > main_test.go << 'EOF'
-package main
+          package main
 
-import "testing"
+          import "testing"
 
-func TestMain(t *testing.T) {
-    // Placeholder test
-    t.Log("System operational")
-}
-EOF
-          
+          func TestMain(t *testing.T) {
+              // Placeholder test
+              t.Log("System operational")
+          }
+          EOF
+
           echo "✅ Go module created"
-      
+
       - name: Create placeholder Dockerfile if needed
         if: contains(env.missing_files, 'docker')
         run: |
           echo "🔧 Creating placeholder Dockerfile..."
           cat > Dockerfile << 'EOF'
-FROM ubuntu:22.04
+          FROM ubuntu:22.04
 
-LABEL maintainer="codex-universal"
-LABEL description="Universal development environment"
+          LABEL maintainer="codex-universal"
+          LABEL description="Universal development environment"
 
-# Install basic dependencies
-RUN apt-get update && apt-get install -y \
-    curl \
-    git \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
+          # Install basic dependencies
+          RUN apt-get update && apt-get install -y \
+              curl \
+              git \
+              build-essential \
+              && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /workspace
+          WORKDIR /workspace
 
-CMD ["/bin/bash"]
-EOF
-          
+          CMD ["/bin/bash"]
+          EOF
+
           echo "✅ Dockerfile created"
-      
+
       - name: Generate cleanup report
         run: |
           echo "## 🧹 Workflow Cleanup Report" > cleanup-report.md
           echo "Generated: $(date -u)" >> cleanup-report.md
           echo "" >> cleanup-report.md
-          
+
           echo "### Actions Taken" >> cleanup-report.md
           if [ ! -z "$missing_files" ]; then
             echo "- ✅ Created placeholder files for: $missing_files" >> cleanup-report.md
           else
             echo "- ℹ️  No missing files detected" >> cleanup-report.md
           fi
-          
+
           echo "" >> cleanup-report.md
           echo "### Workflow Status" >> cleanup-report.md
           echo "All workflows are now configured with necessary dependencies." >> cleanup-report.md
-          
+
           cat cleanup-report.md
-      
+
       - name: Commit fixes if changes were made
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          
+
           if [ -n "$(git status --porcelain)" ]; then
             git add .
             git commit -m "🔧 Auto-fix: Add missing project files for workflows
-            
+
             - Created placeholder files to fix failing workflows
             - All workflows should now have required dependencies
             - Automated cleanup by workflow-cleanup.yml"
@@ -154,14 +154,14 @@ EOF
           else
             echo "ℹ️  No changes to commit"
           fi
-      
+
       - name: Upload cleanup report
         uses: actions/upload-artifact@v4
         with:
           name: cleanup-report
           path: cleanup-report.md
           retention-days: 30
-      
+
       - name: Cleanup complete
         run: |
           echo "✅ Workflow cleanup completed"

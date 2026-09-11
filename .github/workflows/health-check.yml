@@ -2,9 +2,9 @@ name: Health Check
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   schedule:
     - cron: '*/15 * * * *'  # Every 15 minutes
   workflow_dispatch:
@@ -15,11 +15,11 @@ jobs:
     permissions:
       contents: read
       actions: read
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      
+
       - name: Check repository structure
         run: |
           echo "🔍 Checking repository structure..."
@@ -29,7 +29,7 @@ jobs:
           echo ""
           echo "📁 Workflows directory:"
           ls -la .github/workflows/
-      
+
       - name: Validate workflow files
         run: |
           echo "✅ Validating workflow YAML files..."
@@ -44,7 +44,7 @@ jobs:
               fi
             fi
           done
-      
+
       - name: Check workflow dependencies
         run: |
           echo "📦 Checking for required dependencies..."
@@ -53,18 +53,18 @@ jobs:
           echo "✅ Python: $(python3 --version 2>/dev/null || echo 'Not available')"
           echo "✅ Node: $(node --version 2>/dev/null || echo 'Not available')"
           echo "✅ Docker: $(docker --version 2>/dev/null || echo 'Not available')"
-      
+
       - name: Analyze workflow status
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "📊 Analyzing workflow health..."
           echo ""
-          
+
           # Count workflow files
           WORKFLOW_COUNT=$(ls -1 .github/workflows/*.yml 2>/dev/null | wc -l)
           echo "Total workflow files: $WORKFLOW_COUNT"
-          
+
           # List all workflows
           echo ""
           echo "📋 Registered workflows:"
@@ -74,7 +74,7 @@ jobs:
               echo "  - $workflow_name ($(basename $file))"
             fi
           done
-      
+
       - name: Test GitHub Actions connectivity
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -84,43 +84,43 @@ jobs:
             -H "Authorization: token $GITHUB_TOKEN" \
             -H "Accept: application/vnd.github.v3+json" \
             "https://api.github.com/repos/$GITHUB_REPOSITORY")
-          
+
           if [ "$response" = "200" ]; then
             echo "✅ GitHub API connection successful"
           else
             echo "⚠️  GitHub API returned status: $response"
           fi
-      
+
       - name: Generate health report
         run: |
           echo "## 🏥 System Health Report" > health-report.md
           echo "Generated: $(date -u)" >> health-report.md
           echo "" >> health-report.md
-          
+
           echo "### Repository Status" >> health-report.md
           echo "- ✅ Repository accessible" >> health-report.md
           echo "- ✅ Workflows directory exists" >> health-report.md
           echo "- ✅ Workflow files detected: $(ls -1 .github/workflows/*.yml 2>/dev/null | wc -l)" >> health-report.md
           echo "" >> health-report.md
-          
+
           echo "### System Components" >> health-report.md
           echo "- ✅ Git: Available" >> health-report.md
           echo "- ✅ GitHub Actions: Running" >> health-report.md
           echo "- ✅ Workflow automation: Active" >> health-report.md
           echo "" >> health-report.md
-          
+
           echo "### Health Status" >> health-report.md
           echo "🟢 All systems operational" >> health-report.md
-          
+
           cat health-report.md
-      
+
       - name: Upload health report
         uses: actions/upload-artifact@v4
         with:
           name: health-report
           path: health-report.md
           retention-days: 30
-      
+
       - name: Health check complete
         run: |
           echo "✅ Health check completed successfully"

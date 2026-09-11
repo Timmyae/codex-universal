@@ -2,9 +2,9 @@ name: Dashboard Monitor
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   schedule:
     - cron: '*/15 * * * *'  # Every 15 minutes
   workflow_dispatch:
@@ -19,29 +19,29 @@ jobs:
     permissions:
       contents: write
       actions: read
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.13'
-      
+
       - name: Install dependencies
         run: |
           pip install requests pyyaml
-      
+
       - name: Scan workflows directory
         id: scan
         run: |
           echo "Scanning .github/workflows for workflow files..."
           ls -la .github/workflows/
           echo "workflow_count=$(ls -1 .github/workflows/*.yml 2>/dev/null | wc -l)" >> $GITHUB_OUTPUT
-      
+
       - name: Monitor workflow status
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -51,30 +51,30 @@ jobs:
           import json
           import requests
           from datetime import datetime
-          
+
           token = os.environ['GITHUB_TOKEN']
           repo = os.environ['GITHUB_REPOSITORY']
-          
+
           headers = {
               'Authorization': f'token {token}',
               'Accept': 'application/vnd.github.v3+json'
           }
-          
+
           # Get workflow runs
           url = f'https://api.github.com/repos/{repo}/actions/runs'
           response = requests.get(url, headers=headers, params={'per_page': 50})
-          
+
           if response.status_code == 200:
               runs = response.json()['workflow_runs']
               print(f"\n📊 Workflow Status Summary:")
               print(f"Total recent runs: {len(runs)}")
-              
+
               statuses = {}
               for run in runs:
                   workflow_name = run['name']
                   status = run['status']
                   conclusion = run.get('conclusion', 'in_progress')
-                  
+
                   if workflow_name not in statuses:
                       statuses[workflow_name] = {
                           'status': status,
@@ -82,7 +82,7 @@ jobs:
                           'updated_at': run['updated_at'],
                           'html_url': run['html_url']
                       }
-              
+
               print("\n📋 Active Workflows:")
               for workflow, info in statuses.items():
                   emoji = '✅' if info['conclusion'] == 'success' else '❌' if info['conclusion'] == 'failure' else '🔄'
@@ -90,7 +90,7 @@ jobs:
           else:
               print(f"Error fetching workflow runs: {response.status_code}")
           EOF
-      
+
       - name: Generate dashboard report
         run: |
           echo "## 📊 Dashboard Monitor Report" > dashboard-report.md
@@ -108,14 +108,14 @@ jobs:
           echo "### Status" >> dashboard-report.md
           echo "All workflows are being monitored automatically." >> dashboard-report.md
           cat dashboard-report.md
-      
+
       - name: Upload dashboard report
         uses: actions/upload-artifact@v4
         with:
           name: dashboard-report
           path: dashboard-report.md
           retention-days: 30
-      
+
       - name: Workflow monitoring complete
         run: |
           echo "✅ Dashboard monitoring completed successfully"
